@@ -67,7 +67,9 @@ from telegram.ext import (
     MessageHandler,
     filters,
 )
-
+TELEGRAM_BOT_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN")
+OPENROUTER_API_KEY = os.getenv("OPENROUTER_API_KEY")
+TOGETHER_API_KEY = os.getenv("TOGETHER_API_KEY")
 
 # ---------------------------------------------------------------------------
 # Logging configuration
