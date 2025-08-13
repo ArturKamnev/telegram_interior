@@ -243,7 +243,7 @@ def detect_objects_via_openrouter(image_bytes: bytes) -> List[str]:
     detected object names. On any error or unexpected response format,
     an empty list is returned.
     """
-    api_key = "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"
+    api_key = OPENROUTER_API_KEY
     if not api_key:
         raise RuntimeError("OPENROUTER_API_KEY environment variable is missing")
     import base64
@@ -298,7 +298,7 @@ def generate_images_together(prompt: str, n: int, size: str = "1024x1024") -> Li
     It returns a list of images (as bytes) according to the requested
     number ``n``.  If any error occurs, a RuntimeError is raised.
     """
-    api_key = "0324bff708910846e5a6e738430984903587ebc34ef7f333507f84f0935b5d87"
+    api_key = TOGETHER_API_KEY
     if not api_key:
         raise RuntimeError("TOGETHER_API_KEY environment variable is missing")
     model_name = "black-forest-labs/FLUX.1-schnell-Free"
@@ -575,7 +575,7 @@ async def detect_style_handler(update: Update, context: ContextTypes.DEFAULT_TYP
 # Application entry point
 
 def main() -> None:
-    token = "8335570753:AAFtBsDuSb9JyO5_paoOVVE7nWT0yhAnJPA"
+    token = TELEGRAM_BOT_TOKEN
     if not token:
         raise RuntimeError("TELEGRAM_BOT_TOKEN must be set")
     app = ApplicationBuilder().token(token).build()
