@@ -593,6 +593,11 @@ async def detect_style_handler(update: Update, context: ContextTypes.DEFAULT_TYP
 
 def main() -> None:
       # Перед запуском бота
+    
+
+    token = TELEGRAM_BOT_TOKEN
+    if not token:
+        raise RuntimeError("TELEGRAM_BOT_TOKEN must be set")
     threading.Thread(target=run_health_server, daemon=True).start()
 
     # (опционально) всегда снимать webhook, чтобы не ловить Conflict
@@ -604,10 +609,6 @@ def main() -> None:
 
     # дальше ваши handlers...
     app.run_polling(allowed_updates=Update.ALL_TYPES)
-
-    token = TELEGRAM_BOT_TOKEN
-    if not token:
-        raise RuntimeError("TELEGRAM_BOT_TOKEN must be set")
     app = ApplicationBuilder().token(token).build()
     # Generation conversation definition
     gen_conv = ConversationHandler(
