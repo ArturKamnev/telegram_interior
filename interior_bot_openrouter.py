@@ -67,6 +67,21 @@ from telegram.ext import (
     MessageHandler,
     filters,
 )
+import os, threading
+from http.server import BaseHTTPRequestHandler, HTTPServer
+
+def run_health_server():
+    class Handler(BaseHTTPRequestHandler):
+        def do_GET(self):
+            # простой health endpoint на /
+            self.send_response(200)
+            self.end_headers()
+            self.wfile.write(b"ok")
+        def log_message(self, *args, **kwargs):
+            return  # глушим лишние логи
+    port = int(os.getenv("PORT", "8080"))  # Koyeb передаёт порт здесь
+    httpd = HTTPServer(("0.0.0.0", port), Handler)
+    httpd.serve_forever()  
 TELEGRAM_BOT_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN")
 OPENROUTER_API_KEY = os.getenv("OPENROUTER_API_KEY")
 TOGETHER_API_KEY = os.getenv("TOGETHER_API_KEY")
@@ -577,6 +592,19 @@ async def detect_style_handler(update: Update, context: ContextTypes.DEFAULT_TYP
 # Application entry point
 
 def main() -> None:
+      # Перед запуском бота
+    threading.Thread(target=run_health_server, daemon=True).start()
+
+    # (опционально) всегда снимать webhook, чтобы не ловить Conflict
+    from telegram.ext import Application
+    async def _post_init(app: Application):
+        await app.bot.delete_webhook(drop_pending_updates=True)
+
+    app = ApplicationBuilder().token(token).post_init(_post_init).build()
+
+    # дальше ваши handlers...
+    app.run_polling(allowed_updates=Update.ALL_TYPES)
+
     token = TELEGRAM_BOT_TOKEN
     if not token:
         raise RuntimeError("TELEGRAM_BOT_TOKEN must be set")
